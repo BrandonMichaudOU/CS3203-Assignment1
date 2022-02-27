@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Brandon Michaud Assignment 1</title>
+    <style type="text/css">
+      #output,
+      #output th,
+      #output td {
+        border: 1px solid black;
+        border-collapse: collapse;
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        // When the document is first run, hide the output table
+        $("#output").hide();
+
+        // Define a function that clears all of the inputs and hides the output
+        function clearInputs() {
+          $("#tweetID").val("");
+          $("#tweetText").val("");
+          $("#tweetUserID").val("");
+          $("#oldName").val("");
+          $("#newName").val("");
+          $("#deleteTweetID").val("");
+          $("#output").hide();
+        }
+
+        // When the "get tweets" form is submitted, if the request was successful, update the table with the tweet texts and times.
+        // If unsuccessful, notify the user
+        $("#form1").submit(function (event) {
+          event.preventDefault();
+          $.ajax({
+            type: "GET",
+            url: "/tweets",
+            dataType: "json",
+            success: function (response) {
+              console.log(response);
+              clearInputs();
+              let thead = $("#output > thead");
+              thead.html("");
+              thead.append("<tr><th>Text</th><th>Time</th></tr>");
+              let tbody = $("#output > tbody");
+              tbody.html("");
+              for (let i in response) {
+                tbody.append(
+                  "<tr><td>" +
+                    response[i].text +
+                    "</td><td>" +
+                    response[i].created_at +
+                    "</td></tr>"
+                );
+              }
+              $("#output").show();
+            },
+            error: function () {
+              console.log("Could not get tweets");
+              let thead = $("#output > thead");
+              thead.html("");
+              let tbody = $("#output > tbody");
+              tbody.html("");
+              tbody.append("<tr><td>Tweets could not be obtained</td></tr>");
+              $("#output").show();
+            },
+          });
+        });
+
+        // When the "get user IDs" form is submitted, if the request was successful, update the table with user IDs.
+        // If unsuccessful, notify the user
+        $("#form2").submit(function (event) {
+          event.preventDefault();
+          $.ajax({
+            type: "GET",
+            url: "/userIDs",
+            dataType: "json",
+            success: function (response) {
+              console.log(response);
+              clearInputs();
+              let thead = $("#output > thead");
+              thead.html("");
+              thead.append("<tr><th>User IDs</th></tr>");
+              let tbody = $("#output > tbody");
+              tbody.html("");
+              for (let i in response) {
+                tbody.append("<tr><td>" + response[i] + "</td></tr>");
+              }
+              $("#output").show();
+            },
+            error: function () {
+              console.log("Could not get user IDs");
+              let thead = $("#output > thead");
+              thead.html("");
+              let tbody = $("#output > tbody");
+              tbody.html("");
+              tbody.append("<tr><td>User IDs could not be obtained</td></tr>");
+              $("#output").show();
+            },
+          });
+        });
+
+        // When the "get tweet details" form is submitted, if the request was successful, update the table with the tweet's
+        // text and time. If unsuccessful, notify the user the tweet ID was not found
+        $("#form3").submit(function (event) {
+          event.preventDefault();
+          let tweetID = $("#tweetID").val();
+          $.ajax({
+            type: "GET",
+            url: "/tweets/" + tweetID,
+            dataType: "json",
+            success: function (response) {
+              console.log(response);
+              clearInputs();
+              let thead = $("#output > thead");
+              thead.html("");
+              thead.append("<tr><th>Text</th><th>Time</th></tr>");
+              let tbody = $("#output > tbody");
+              tbody.html("");
+              tbody.append(
+                "<tr><td>" +
+                  response.text +
+                  "</td><td>" +
+                  response.created_at +
+                  "</td></tr>"
+              );
+              $("#output").show();
+            },
+            error: function () {
+              console.log("Tweet ID not found");
+              let thead = $("#output > thead");
+              thead.html("");
+              let tbody = $("#output > tbody");
+              tbody.html("");
+              tbody.append("<tr><td>Tweet ID was not found</td></tr>");
+              $("#output").show();
+            },
+          });
+        });
+
+        // When the "create tweet" form is submitted, make a new tweet object and send it to the server to get added to the
+        // array of tweets. If the was an error, notify the user the tweet could not be created
+        $("#form4").submit(function (event) {
+          event.preventDefault();
+          let text = $("#tweetText").val();
+          let userID = $("#tweetUserID").val();
+          let rngID = Math.floor(Math.random() * 99999999999999999);
+          $.ajax({
+            type: "POST",
+            url: "/create",
+            data: {
+              created_at: Date(Date.now()),
+              id: rngID,
+              id_str: rngID.toString(),
+              text: text,
+              source: null,
+              truncated: false,
+              in_reply_to_status_id: null,
+              in_reply_to_status_id_str: null,
+              in_reply_to_user_id: null,
+              in_reply_to_user_id_str: null,
+              in_reply_to_screen_name: null,
+              user: {
+                id: userID,
+                id_str: toString(userID),
+                name: null,
+                screen_name: null,
+                location: null,
+                description: null,
+                url: null,
+                entities: {
+                  url: {
+                    urls: [
+                      {
+                        url: null,
+                        expanded_url: null,
+                        indices: null,
+                      },
+                    ],
+                  },
+                  description: {
+                    urls: [],
+                  },
+                },
+                protected: null,
+                followers_count: null,
+                friends_count: null,
+                listed_count: null,
+                created_at: null,
+                favourites_count: null,
+                utc_offset: null,
+                time_zone: null,
+                geo_enabled: null,
+                verified: null,
+                statuses_count: null,
+                lang: null,
+                contributors_enabled: null,
+                is_translator: null,
+                profile_background_color: null,
+                profile_background_image_url: null,
+                profile_background_image_url_https: null,
+                profile_background_tile: null,
+                profile_image_url: null,
+                profile_image_url_https: null,
+                profile_link_color: null,
+                profile_sidebar_border_color: null,
+                profile_sidebar_fill_color: null,
+                profile_text_color: null,
+                profile_use_background_image: null,
+                default_profile: null,
+                default_profile_image: null,
+                following: null,
+                follow_request_sent: null,
+                notifications: null,
+              },
+              geo: null,
+              coordinates: null,
+              place: null,
+              contributors: null,
+              retweet_count: null,
+              entities: {
+                hashtags: [],
+                urls: [
+                  {
+                    url: null,
+                    expanded_url: null,
+                    display_url: null,
+                    indices: null,
+                  },
+                ],
+                user_mentions: [
+                  {
+                    screen_name: null,
+                    name: null,
+                    id: null,
+                    id_str: null,
+                    indices: null,
+                  },
+                  {
+                    screen_name: null,
+                    name: null,
+                    id: null,
+                    id_str: null,
+                    indices: null,
+                  },
+                ],
+              },
+              favorited: null,
+              retweeted: null,
+              possibly_sensitive: null,
+              lang: null,
+            },
+            dataType: "json",
+            success: function (response) {
+              clearInputs();
+              console.log(response);
+              let thead = $("#output > thead");
+              thead.html("");
+              let tbody = $("#output > tbody");
+              tbody.html("");
+              tbody.append("<tr><td>Tweet was successfully created</td></tr>");
+              $("#output").show();
+            },
+            error: function () {
+              console.log("Could not create tweet");
+              let thead = $("#output > thead");
+              thead.html("");
+              let tbody = $("#output > tbody");
+              tbody.html("");
+              tbody.append("<tr><td>Could not create tweet</td></tr>");
+              $("#output").show();
+            },
+          });
+        });
+
+        // When the "update name" form is submitted, send the names to the server. If the old name was valid and the update
+        // occurred, notify the user. If the update was unsuccessful, notify the user
+        $("#form5").submit(function (event) {
+          event.preventDefault();
+          let oldName = $("#oldName").val();
+          let newName = $("#newName").val();
+          $.ajax({
+            url: "/update-name",
+            method: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({ oldName: oldName, newName: newName }),
+            success: function (response) {
+              clearInputs();
+              console.log(response);
+              let thead = $("#output > thead");
+              thead.html("");
+              let tbody = $("#output > tbody");
+              tbody.html("");
+              tbody.append("<tr><td>" + response + "</td></tr>");
+              $("#output").show();
+            },
+            error: function () {
+              console.log(`User with screen name ${oldName} was not found`);
+              let thead = $("#output > thead");
+              thead.html("");
+              let tbody = $("#output > tbody");
+              tbody.html("");
+              tbody.append(
+                "<tr><td>Screen name " + oldName + " was not found</td></tr>"
+              );
+              $("#output").show();
+            },
+          });
+        });
+
+        // When the "delete tweet" form is submitted, send the server the tweet ID. If the tweet was found and deleted, notify
+        // the user. If the tweet was not found or deleted, notify the user
+        $("#form6").submit(function (event) {
+          event.preventDefault();
+          let tweetID = $("#deleteTweetID").val();
+          $.ajax({
+            url: "/delete/" + tweetID,
+            method: "DELETE",
+            contentType: "application/json",
+            success: function (response) {
+              clearInputs();
+              console.log(response);
+              let thead = $("#output > thead");
+              thead.html("");
+              let tbody = $("#output > tbody");
+              tbody.html("");
+              tbody.append("<tr><td>" + response + "</td></tr>");
+              $("#output").show();
+            },
+            error: function () {
+              console.log(`Tweet with the ID ${tweetID} was not found`);
+              let thead = $("#output > thead");
+              thead.html("");
+              let tbody = $("#output > tbody");
+              tbody.html("");
+              tbody.append(
+                "<tr><td>Tweet with ID: " + tweetID + " was not found</td></tr>"
+              );
+              $("#output").show();
+            },
+          });
+        });
+      });
+    </script>
+  </head>
+
+  <body>
+    <br />
+    <table id="input" style="margin-left: auto; margin-right: auto">
+      <form id="form1" method="POST">
+        <tr>
+          <td><label>Get all Tweets</label></td>
+          <td>
+            <button id="getTweets">Submit</button>
+          </td>
+        </tr>
+      </form>
+      <form id="form2" method="POST">
+        <tr>
+          <td><label>Get all User IDs</label></td>
+          <td>
+            <button id="getUserIDs">Submit</button>
+          </td>
+        </tr>
+      </form>
+      <form id="form3" method="POST">
+        <tr>
+          <td><label>Get Tweet Details</label></td>
+          <td>
+            <input
+              class="form-control"
+              type="Number"
+              name="tweetID"
+              id="tweetID"
+              placeholder="Tweet ID"
+              required
+            />
+          </td>
+          <td>
+            <button id="getTweetDetails">Submit</button>
+          </td>
+        </tr>
+      </form>
+      <form id="form4" method="POST">
+        <tr>
+          <td><label>Create Tweet</label></td>
+          <td>
+            <input
+              class="form-control"
+              type="text"
+              name="tweetText"
+              id="tweetText"
+              placeholder="Text"
+              required
+            />
+          </td>
+          <td>
+            <input
+              class="form-control"
+              type="number"
+              name="tweetUserID"
+              id="tweetUserID"
+              placeholder="User ID"
+              required
+            />
+          </td>
+          <td>
+            <button id="createTweet">Submit</button>
+          </td>
+        </tr>
+      </form>
+      <form id="form5" method="POST">
+        <tr>
+          <td><label>Update Name</label></td>
+          <td>
+            <input
+              class="form-control"
+              type="text"
+              name="oldName"
+              id="oldName"
+              placeholder="Old Name"
+              required
+            />
+          </td>
+          <td>
+            <input
+              class="form-control"
+              type="text"
+              name="newName"
+              id="newName"
+              placeholder="New Name"
+              required
+            />
+          </td>
+          <td>
+            <button id="updateName">Submit</button>
+          </td>
+        </tr>
+      </form>
+      <form id="form6" method="POST">
+        <tr>
+          <td><label>Delete Tweet</label></td>
+          <td>
+            <input
+              class="form-control"
+              type="Number"
+              name="deleteTweetID"
+              id="deleteTweetID"
+              placeholder="Tweet ID"
+              required
+            />
+          </td>
+          <td>
+            <button id="deleteTweet">Submit</button>
+          </td>
+        </tr>
+      </form>
+    </table>
+    <br />
+    <br />
+    <table id="output" style="margin-left: auto; margin-right: auto">
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+  </body>
+</html>

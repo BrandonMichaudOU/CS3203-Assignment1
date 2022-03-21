@@ -1,5 +1,7 @@
 # Brandon Michaud Software Engineering Assignment 1
 
+Test
+
 This project was developed with the purpose of being submitted for an assignment in my Software Engnineering class. It is based off of a github tutorial (see references) that the professor adapted and gave to us as an assignment.
 
 # Installation in Local
